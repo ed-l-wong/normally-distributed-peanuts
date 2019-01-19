@@ -41,6 +41,7 @@ def printDict(dict):
 def getPeople():
 	people = {}
 	# Fill in information
+	# TODO if any names are duplicated, append the timestamp in Full Name
 	with open(filename, newline='') as csvfile:
 		reader = csv.DictReader(csvfile, delimiter=',')
 		for row in reader:
@@ -56,8 +57,8 @@ def getPeople():
 
 def writeToFile(completeCandidateList):
 	with open('output.csv', 'w', newline='') as csvfile:
-		fieldnames = ["Full Name", "Candidate 1", "Candidate 2", "Candidate 3"]
-		writer = csv.DictWriter(csvfile, fieldnames)
+		writer = csv.writer(csvfile)
+		writer.writerow(["Full Name", "Candidate 1", "Candidate 2", "Candidate 3"])
 		writer.writerows(completeCandidateList)
 
 
@@ -109,17 +110,17 @@ def matchMaking():
 			candidateDict = dict(zip(candidates, [0] * len(candidates)))
 
 			for candidate in candidates:
-				# Score the spare time question (with 3 times weighting)
+				# Score the spare time question (with relevant weighting)
 				score = len(set(people[candidate][2].split(",")).intersection(people[person][2].split(",")))
 				candidateDict[candidate] += 3 * score
 
-				# Score the personality question (with 2 times weighting)
+				# Score the personality question (with relevant weighting)
 				score = len(set(people[candidate][3].split(",")).intersection(people[person][3].split(",")))
 				candidateDict[candidate] += 2 * score
 
-				# Score the ideal date question (with 1 times weighting)
+				# Score the ideal date question (with relevant weighting)
 				score = len(set(people[candidate][4].split(",")).intersection(people[person][4].split(",")))
-				candidateDict[candidate] += 1 * score
+				candidateDict[candidate] += 2 * score
 
 
 			# sort the candidates and put them into the candidates array
@@ -137,8 +138,14 @@ def matchMaking():
 		completeCandidateList[person] = candidates
 
 	printDict(completeCandidateList)
+
+	result = []
+
+	for key, value in completeCandidateList.items():
+		result.append([key] + value)
+
 	# write to the csv with the top three matches appended at the end
-	# writeToFile(completeCandidateList)
+	writeToFile(result)
 
 if __name__ == "__main__":
 	matchMaking()
