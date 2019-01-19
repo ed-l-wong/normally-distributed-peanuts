@@ -25,7 +25,11 @@ Iterate through each person and match them by:
 import csv
 from collections import defaultdict
 
+
+# VARIABLES
 filename = "test.csv"
+numberOfMatches = 3
+
 
 def printDict(dict):
 	for ind in dict:
@@ -35,18 +39,7 @@ def printDict(dict):
 # Returns a dictionary of people where the key is each persons name and the values are
 # their relevant responses.
 def getPeople():
-	def transpose(people):
-		# Transpose the data
-		# At the moment we finish with a name dict, q1 a dict, q2 a dict etc... is this the best way?
-		newdict = {}
-		for k in people:
-			for v in people[k]:
-				newdict.setdefault(v, []).append(k)
-
-		return newdict
-
 	people = {}
-
 	# Fill in information
 	with open(filename, newline='') as csvfile:
 		reader = csv.DictReader(csvfile, delimiter=',')
@@ -57,7 +50,6 @@ def getPeople():
 				row["What 4 things do you most enjoy in your spare time?"],\
 				row["What 4 personality traits describe yourself?"],\
 				row["Whats your ideal date?"]
-
 
 	return people
 
@@ -96,11 +88,11 @@ def getSexualPref(sexuality):
 
 def matchMaking():
 	people = getPeople()
-	# printDict(people)
 
 	completeCandidateList = {}
 
 	for person in people:
+
 		candidates = []
 		sexuality = people[person][0]
 		eligibile = getSexualPref(sexuality)
@@ -112,12 +104,41 @@ def matchMaking():
 			if people[candidate][0] in eligibile and bool(set(possibleDates).intersection(theirPossibleDates)):
 				candidates.append(candidate)
 
-		# TODO gather top 3 eligible candidates
+		# convert candidates to a dictionary with values as their scores
+		if len(candidates) > numberOfMatches:
+			candidateDict = dict(zip(candidates, [0] * len(candidates)))
 
+			for candidate in candidates:
+				# Score the spare time question (with 3 times weighting)
+				score = len(set(people[candidate][2].split(",")).intersection(people[person][2].split(",")))
+				candidateDict[candidate] += 3 * score
+
+				# Score the personality question (with 2 times weighting)
+				score = len(set(people[candidate][3].split(",")).intersection(people[person][3].split(",")))
+				candidateDict[candidate] += 2 * score
+
+				# Score the ideal date question (with 1 times weighting)
+				score = len(set(people[candidate][4].split(",")).intersection(people[person][4].split(",")))
+				candidateDict[candidate] += 1 * score
+
+
+			# sort the candidates and put them into the candidates array
+			candidates = [k for k in sorted(candidateDict, key=candidateDict.get, reverse=True)]
+			print("For "+str(person)+" their candidates with corresponding scores are:")
+			printDict(candidateDict)
+		else:
+			print(str(person)+" did not have more than "+str(numberOfMatches)+" matches.")
+
+		print(candidates)
+		print("----------------")
+
+		# take the top N
+		candidates = candidates[0:numberOfMatches]
 		completeCandidateList[person] = candidates
 
+	printDict(completeCandidateList)
 	# write to the csv with the top three matches appended at the end
-	writeToFile(completeCandidateList)
+	# writeToFile(completeCandidateList)
 
 if __name__ == "__main__":
 	matchMaking()
