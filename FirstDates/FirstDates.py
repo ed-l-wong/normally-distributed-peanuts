@@ -51,7 +51,9 @@ def getPeople():
 				row["Please select all the days you are available for your date:"],\
 				row["What 4 things do you most enjoy in your spare time?"],\
 				row["What 4 personality traits describe yourself?"],\
-				row["Whats your ideal date?"]
+				row["Whats your ideal date?"],\
+				row["Skip these candidates."]
+
 
 	return people
 
@@ -104,7 +106,9 @@ def matchMaking():
 		for candidate in {i:people[i] for i in people if i!=person}:
 			theirPossibleDates = people[candidate][1].split(",")
 			if people[candidate][0] in eligibile and bool(set(possibleDates).intersection(theirPossibleDates)):
-				candidates.append(candidate)
+				# Checking if candidate is in ignore list (or vice versa)
+				if candidate not in people[person][5].split(",") and person not in people[candidate][5].split(","):
+					candidates.append(candidate)
 
 		# convert candidates to a dictionary with values as their scores
 		if len(candidates) > numberOfMatches:
