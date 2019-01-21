@@ -7,9 +7,7 @@ The team will then go through these manually and judge by eye whether they would
 
 Form: https://docs.google.com/forms/d/1L4QRRU_kHX13MysTP7Rp42pZZKQXEAa2OX_6z0HVrYs
 
-TODO Do I need to defend against duplicate names?
-Probably- do this later.
-TODO Remove everyone who is "other" on "I am a..."
+PRECONDITION: Ensure the input file has no "other" person in it.
 
 Iterate through each person and match them by:
 0. Sexuality
@@ -23,7 +21,6 @@ Iterate through each person and match them by:
 '''
 
 import csv
-from collections import defaultdict
 
 
 # VARIABLES
@@ -41,11 +38,15 @@ def printDict(dict):
 def getPeople():
 	people = {}
 	# Fill in information
-	# TODO if any names are duplicated, append the timestamp in Full Name
 	with open(filename, newline='') as csvfile:
 		reader = csv.DictReader(csvfile, delimiter=',')
 		for row in reader:
-			people[row["Full Name"]] =\
+			# If someone has the same name then we append the time stamp.
+			if row["Full Name"] in people:
+				person = row["Full Name"] + row["Timestamp"]
+			else:
+				person = row["Full Name"]
+			people[person] =\
 				row["I am a..."],\
 				row["Please select all the days you are available for your date:"],\
 				row["What 4 things do you most enjoy in your spare time?"],\
@@ -84,7 +85,7 @@ def getSexualPref(sexuality):
 	elif sexuality == WB:
 		return [MW, WW, MB, WB]
 	else:
-		raise Exception("You fucked up the sexuality: " + str(sexuality))
+		raise Exception("Other sexuality: " + str(sexuality) + ". Please remove and sort by hand.")
 
 
 def matchMaking():
@@ -122,22 +123,12 @@ def matchMaking():
 				score = len(set(people[candidate][4].split(",")).intersection(people[person][4].split(",")))
 				candidateDict[candidate] += 2 * score
 
-
 			# sort the candidates and put them into the candidates array
 			candidates = [k for k in sorted(candidateDict, key=candidateDict.get, reverse=True)]
-			print("For "+str(person)+" their candidates with corresponding scores are:")
-			printDict(candidateDict)
-		else:
-			print(str(person)+" did not have more than "+str(numberOfMatches)+" matches.")
-
-		print(candidates)
-		print("----------------")
 
 		# take the top N
 		candidates = candidates[0:numberOfMatches]
 		completeCandidateList[person] = candidates
-
-	printDict(completeCandidateList)
 
 	result = []
 
