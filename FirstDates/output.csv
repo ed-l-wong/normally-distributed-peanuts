@@ -1,18 +1,17 @@
 Full Name,Candidate 1,Candidate 2,Candidate 3
-Ed,Sarah,Ela,Sophie
-Brad,James
-James,Ela,Brad,Hannah
-Hannah,James,Peter,Richard
-Helen,Hannah1/18/2019 20:59:03,Sarah
-Hannah1/18/2019 20:59:03,Shaun,Peter,Sarah
-Ellen,James,Richard,Dominic
-Shaun,Hannah1/18/2019 20:59:03,Sophie,adam
-Sarah,Ed,Dominic,adam
-adam,Shaun,Sarah,Sophie
-Richard,Ela,Ellen,Sarah
-Dominic,Ellen,Sarah,Ela
-Ela,Richard,James,Dominic
-Sophie,Ed,Shaun,adam
-Peter,Hannah,Hannah1/18/2019 20:59:03,Sarah
-Thing1,James,Shaun,adam
-Thing2
+Ed,Rhi,Hannah,Alice
+Max,Paul,Paul1/22/2019 16:27:55,Ed
+Hannah,Paul,Paul1/22/2019 16:27:55,Ed
+Rhi,Ed,Paul,Paul1/22/2019 16:27:55
+Alice,Ed,Isaac Benman,Elliot Brown
+Yanni,Elliot Brown,Isaac Benman,Ed
+Helen,Paul,Paul1/22/2019 16:27:55,Isaac Benman
+Paul,Hannah,Max,Rhi
+Paul1/22/2019 16:27:55,Hannah,Max,Rhi
+Lucy,PAUL,Paul,Paul1/22/2019 16:27:55
+Ellen,Isaac Benman,Paul,Paul1/22/2019 16:27:55
+PAUL,Lucy,Emily Smith
+Isaac Benman,Ellen,Hannah,Alice
+Poppy,Isaac Benman,Elliot Brown,Paul
+Emily Smith,Ed,Paul,Paul1/22/2019 16:27:55
+Elliot Brown,Yanni,Max,Alice

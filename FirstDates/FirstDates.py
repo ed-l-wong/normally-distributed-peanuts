@@ -7,21 +7,20 @@ The team will then go through these manually and judge by eye whether they would
 
 Form: https://docs.google.com/forms/d/1L4QRRU_kHX13MysTP7Rp42pZZKQXEAa2OX_6z0HVrYs
 
-PRECONDITION: Ensure the input file has no "other" person in it.
+PRECONDITION: This only sorts straight people, the rest shall be done by hand.
 
 Iterate through each person and match them by:
 0. Sexuality
 1. Available dates
 2. Things in spare time
 3. Personality
-4. Ideal date
+4. Drinking habits and Ideal date
 
 @author Ed Wong
 @date Jan 2019
 '''
 
 import csv
-
 
 # VARIABLES
 filename = "test.csv"
@@ -51,8 +50,9 @@ def getPeople():
 				row["Please select all the days you are available for your date:"],\
 				row["What 4 things do you most enjoy in your spare time?"],\
 				row["What 4 personality traits describe yourself?"],\
-				row["Whats your ideal date?"],\
-				row["Skip these candidates."]
+				row["How much do you drink"],\
+				row["Whats your ideal date?"]#,\
+				# row["Skip these candidates."]
 
 
 	return people
@@ -68,24 +68,26 @@ def writeToFile(completeCandidateList):
 # Get sexuality preference.
 def getSexualPref(sexuality):	
 	MW = "Man looking for a woman"
-	MM = "Man looking for a man"
+	# MM = "Man looking for a man"
 	WM = "Woman looking for a man"
-	WW = "Woman looking for a woman"
-	MB = "Man looking for man or woman"
-	WB = "Woman looking for man or woman"
+	# WW = "Woman looking for a woman"
+	# MB = "Man looking for man or woman"
+	# WB = "Woman looking for man or woman"
 
 	if sexuality == MW:
-		return [WM, WB]
+		# return [WM, WB]
+		return [WM]
 	elif sexuality == WM:
-		return [MW, MB]
-	elif sexuality == WW:
-		return [WW, WB]
-	elif sexuality == MM:
-		return [MM, MB]
-	elif sexuality == MB:
-		return [WM, MM, WB, MB]
-	elif sexuality == WB:
-		return [MW, WW, MB, WB]
+		# return [MW, MB]
+		return [MW]
+	# elif sexuality == WW:
+	# 	return [WW, WB]
+	# elif sexuality == MM:
+	# 	return [MM, MB]
+	# elif sexuality == MB:
+	# 	return [WM, MM, WB, MB]
+	# elif sexuality == WB:
+	# 	return [MW, WW, MB, WB]
 	else:
 		raise Exception("Other sexuality: " + str(sexuality) + ". Please remove and sort by hand.")
 
@@ -117,14 +119,18 @@ def matchMaking():
 			for candidate in candidates:
 				# Score the spare time question (with relevant weighting)
 				score = len(set(people[candidate][2].split(",")).intersection(people[person][2].split(",")))
-				candidateDict[candidate] += 3 * score
+				candidateDict[candidate] += 4 * score
 
 				# Score the personality question (with relevant weighting)
 				score = len(set(people[candidate][3].split(",")).intersection(people[person][3].split(",")))
+				candidateDict[candidate] += 3 * score
+
+				# Score the drinking question (with relevant weighting)
+				score = len(set(people[candidate][4].split(",")).intersection(people[person][4].split(",")))
 				candidateDict[candidate] += 2 * score
 
 				# Score the ideal date question (with relevant weighting)
-				score = len(set(people[candidate][4].split(",")).intersection(people[person][4].split(",")))
+				score = len(set(people[candidate][5].split(",")).intersection(people[person][5].split(",")))
 				candidateDict[candidate] += 2 * score
 
 			# sort the candidates and put them into the candidates array
