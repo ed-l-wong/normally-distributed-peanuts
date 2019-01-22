@@ -1,13 +1,16 @@
 /*
 Euler 1.
-If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23. Find the sum of all the multiples of 3 or 5 below 1000.
+If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9.
+The sum of these multiples is 23. Find the sum of all the multiples of 3 or 5 below 1000.
 */
 
 #include <iostream>
 using namespace std;
 
 void problem() {
-  cout << "If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23. Find the sum of all the multiples of 3 or 5 below 1000." << endl << endl;
+  cout << "If we list all the natural numbers below 10 that are multiples of 3 or 5, we get \
+  3, 5, 6 and 9. The sum of these multiples is 23. Find the sum of all the multiples of 3 or \
+  5 below 1000." << endl << endl;
 }
 
 
@@ -44,12 +47,31 @@ int improved_multiples(int a) {
   return total;
 }
 
+int formula(float n, float m) {
+  return (n/2)*(n+1)*m;
+}
+
+/*
+This one take the sum of consecutive numbers by using 1+2+3+...+n = (n/2)(n+1)
+
+I think this should be the most efficient one as there is no loop required as we utilise the arithmetic formula.
+*/
+int best_multiple(int a) {
+  int x = (a-1)/3;
+  int y = (a-1)/5;
+  int z = (a-1)/15;
+  cout << x << " summed to: " << formula(x,3) << endl;
+  cout << y << " summed to: " << formula(y,5) << endl;
+  cout << z << " summed to: " << formula(z,15) << endl;
+  return formula(x,3) + formula(y,5) - formula(z,15);
+}
+
 
 int main() {
   problem();
   int input;
   cout << "Please input an upper bound." << endl;
-  cin >> input ;
-  cout << naive_multiples(input) << endl;
-  cout << improved_multiples(input) << endl;
+  cin >> input;
+  cout << "Total is: " << best_multiple(input) << endl;
+  cout << "Actual answer is: " << improved_multiples(input) << endl;
 }
