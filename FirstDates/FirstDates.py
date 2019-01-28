@@ -16,6 +16,8 @@ Iterate through each person and match them by:
 3. Personality
 4. Drinking habits and Ideal date
 
+TODO- Ensure a first year does not get matched with a fourth year.
+
 @author Ed Wong
 @date Jan 2019
 '''
