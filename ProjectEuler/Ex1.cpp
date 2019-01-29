@@ -73,5 +73,4 @@ int main() {
   cout << "Please input an upper bound." << endl;
   cin >> input;
   cout << "Total is: " << best_multiple(input) << endl;
-  cout << "Actual answer is: " << improved_multiples(input) << endl;
 }
