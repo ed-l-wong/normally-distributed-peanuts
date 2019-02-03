@@ -22,7 +22,7 @@ Iterate through each person and match them by:
 import csv
 
 # VARIABLES
-filename = "Carnival RAG's First Dates.csv"
+filename = "Carnival RAG's First Dates Master copy - Form Responses 1.csv"
 output = 'output.csv'
 numberOfMatches = 3
 
@@ -42,7 +42,7 @@ def getPeople():
 		for row in reader:
 			# If someone has the same name then we append the time stamp.
 			if row["Full Name "] in people:
-				person = row["Full Name "] + row["Timestamp"]
+				raise Exception("Duplicate person: " + str(row["Full Name "]))
 			else:
 				person = row["Full Name "]
 			people[person] =\
@@ -69,10 +69,16 @@ def writeToFile(completeCandidateList):
 def getSexualPref(sexuality):	
 	MW = "Man looking for a woman"
 	WM = "Woman looking for a man"
+	MB = "Man looking for man or woman"
+	WB = "Woman looking for man or woman"
 	if sexuality == MW:
-		return [WM]
+		return [WM, WB]
 	elif sexuality == WM:
+		return [MW, MB]
+	elif sexuality == WB:
 		return [MW]
+	elif sexuality == MB:
+		return [WM]
 	else:
 		raise Exception("Other sexuality: " + str(sexuality) + ". Please remove and sort by hand.")
 
@@ -94,12 +100,12 @@ def matchMaking():
 		candidates = []
 		sexuality = people[person][0]
 		eligibile = getSexualPref(sexuality)
-		possibleDates = people[person][1].split(";")
+		possibleDates = people[person][1].strip().split(",")
 		personYoS = people[person][6]
 
 		# Gather candidates by sexuality and available dates first.
 		for candidate in {i:people[i] for i in people if i!=person}:
-			theirPossibleDates = people[candidate][1].split(";")
+			theirPossibleDates = people[candidate][1].strip().split(",")
 			if people[candidate][0] in eligibile and bool(set(possibleDates).intersection(theirPossibleDates)):
 				if yearOfStudyCheck(personYoS,people[candidate][6]):
 					# Checking if candidate is in ignore list (or vice versa) THIS IS FOR THE NEXT ITERATION
@@ -112,23 +118,50 @@ def matchMaking():
 
 			for candidate in candidates:
 				# Score the spare time question (with relevant weighting)
-				score = len(set(people[candidate][2].split(";")).intersection(people[person][2].split(";")))
+				thing1 = set([x.strip() for x in people[candidate][2].strip().split(",")])
+				thing2 = [x.strip() for x in people[person][2].strip().split(",")]
+				score = len(thing1.intersection(thing2))
+				# if score == 3:
+				# 	print(thing1)
+				# 	print(thing2)
+				# 	print(score)
 				candidateDict[candidate] += 4 * score
 
 				# Score the personality question (with relevant weighting)
-				score = len(set(people[candidate][3].split(";")).intersection(people[person][3].split(";")))
+				thing1 = set([x.strip() for x in people[candidate][3].strip().split(",")])
+				thing2 = [x.strip() for x in people[person][3].strip().split(",")]
+				score = len(thing1.intersection(thing2))
+				# if score == 3:
+				# 	print(thing1)
+				# 	print(thing2)
+				# 	print(score)
 				candidateDict[candidate] += 3 * score
 
 				# Score the drinking question (with relevant weighting)
-				score = len(set(people[candidate][4].split(";")).intersection(people[person][4].split(";")))
+				thing1 = set([x.strip() for x in people[candidate][4].strip().split(",")])
+				thing2 = [x.strip() for x in people[person][4].strip().split(",")]
+				score = len(thing1.intersection(thing2))
+				# if score == 3:
+				# 	print(thing1)
+				# 	print(thing2)
+				# 	print(score)
 				candidateDict[candidate] += 2 * score
 
 				# Score the ideal date question (with relevant weighting)
-				score = len(set(people[candidate][5].split(";")).intersection(people[person][5].split(";")))
+				thing1 = set([x.strip() for x in people[candidate][5].strip().split(",")])
+				thing2 = [x.strip() for x in people[person][5].strip().split(",")]
+				score = len(thing1.intersection(thing2))
+				# if score == 3:
+				# 	print(thing1)
+				# 	print(thing2)
+				# 	print(score)
 				candidateDict[candidate] += 2 * score
+
 
 			# sort the candidates and put them into the candidates array
 			candidates = [k for k in sorted(candidateDict, key=candidateDict.get, reverse=True)]
+		else:
+			print(person)
 
 		# take the top N
 		candidates = candidates[0:numberOfMatches]
