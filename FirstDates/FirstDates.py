@@ -22,9 +22,10 @@ Iterate through each person and match them by:
 import csv
 
 # VARIABLES
-filename = "Carnival RAG's First Dates Master copy - Form Responses 1.csv"
-output = 'output.csv'
-numberOfMatches = 3
+New = "First Dates No Match Spreadsheet (1) - Form Responses 1.csv"
+oldmatches = "oldmatches.csv"
+newoutput = "newmatches.csv"
+numberOfMatches = 5
 
 
 def printDict(dict):
@@ -37,14 +38,22 @@ def printDict(dict):
 def getPeople():
 	people = {}
 	# Fill in information
-	with open(filename, newline='') as csvfile:
-		reader = csv.DictReader(csvfile, delimiter=',')
-		for row in reader:
+
+	with open(New, newline='', encoding='utf-8') as new_csv, open(oldmatches, newline='', encoding='utf-8') as old_csv:
+		new_reader = csv.DictReader(new_csv, delimiter=',')
+		old_reader = csv.reader(old_csv, delimiter=',')
+
+		old_matches = {}
+		for k in old_reader:
+			old_matches[k[0].strip()] = k[1].strip(),k[2].strip(),k[3].strip()
+			# old_matches[k[0]] = k[1],k[2],k[3]
+
+		for row in new_reader:
 			# If someone has the same name then we append the time stamp.
 			if row["Full Name "] in people:
 				raise Exception("Duplicate person: " + str(row["Full Name "]))
 			else:
-				person = row["Full Name "]
+				person = row["Full Name "].strip()
 			people[person] =\
 				row["I am a..."],\
 				row["Please select all the days you are available for your date:"],\
@@ -52,14 +61,14 @@ def getPeople():
 				row["What 4 personality traits describe yourself?"],\
 				row["How much do you drink"],\
 				row["Whats your ideal date?"],\
-				row["Year of Study"]#\
-				# row["Skip these candidates."]
+				row["Year of Study"],\
+				old_matches[person]
 
 	return people
 
 
 def writeToFile(completeCandidateList):
-	with open(output, 'w', newline='') as csvfile:
+	with open(newoutput, 'w', newline='') as csvfile:
 		writer = csv.writer(csvfile)
 		writer.writerow(["Full Name ", "Candidate 1", "Candidate 2", "Candidate 3"])
 		writer.writerows(completeCandidateList)
@@ -100,17 +109,19 @@ def matchMaking():
 		candidates = []
 		sexuality = people[person][0]
 		eligibile = getSexualPref(sexuality)
-		possibleDates = people[person][1].strip().split(",")
+		possibleDates = set([x.strip() for x in people[person][1].strip().split(",")])
 		personYoS = people[person][6]
 
 		# Gather candidates by sexuality and available dates first.
 		for candidate in {i:people[i] for i in people if i!=person}:
-			theirPossibleDates = people[candidate][1].strip().split(",")
-			if people[candidate][0] in eligibile and bool(set(possibleDates).intersection(theirPossibleDates)):
-				if yearOfStudyCheck(personYoS,people[candidate][6]):
-					# Checking if candidate is in ignore list (or vice versa) THIS IS FOR THE NEXT ITERATION
-					# if candidate not in people[person][6].split(",") and person not in people[candidate][6].split(","):
-					candidates.append(candidate)
+			if candidate not in people[person][7] and person not in people[candidate][7]:
+				theirPossibleDates = [x.strip() for x in people[person][1].strip().split(",")]
+				score = len(possibleDates.intersection(theirPossibleDates))
+
+				if people[candidate][0] in eligibile and score > 0:
+					if yearOfStudyCheck(personYoS,people[candidate][6]):
+						# Checking if candidate is in ignore list (or vice versa) THIS IS FOR THE NEXT ITERATION
+						candidates.append(candidate)
 
 		# convert candidates to a dictionary with values as their scores
 		if len(candidates) > numberOfMatches:
